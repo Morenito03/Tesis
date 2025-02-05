@@ -1,0 +1,54 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('fondo-medicina.jpg'); /* Imagen de fondo */
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    color: white;
+}
+
+.container {
+    background: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.3);
+    max-width: 400px;
+    margin: auto;
+    backdrop-filter: blur(5px);
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+input[type="file"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background: white;
+    color: black;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+p#status {
+    margin-top: 10px;
+    font-weight: bold;
+}

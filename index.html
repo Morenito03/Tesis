@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medistruct</title>  
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilo para el cuadro de respuesta */
+        #responseBox {
+            background-color: black;
+            color: white;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            display: none; /* Oculto hasta que haya una respuesta */
+            font-family: Arial, sans-serif;
+        }
+
+        /* Estilo para agrandar el campo de la pregunta */
+        #questionInput {
+            width: 500px;  /* Ancho mayor */
+            height: 40px;  /* Altura mayor */
+            font-size: 16px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bienvenido a Medistruct</h1>
+
+    <!-- Sección de subida de archivos -->
+    <h2>Subir Documento</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Subir</button>
+    <p id="uploadStatus"></p>
+
+    <!-- Sección de preguntas a Phi-3.5 -->
+    <h2>Preguntar a Phi-3.5</h2>
+    <input type="text" id="questionInput" placeholder="Haz una pregunta sobre los documentos">
+    <button onclick="askQuestion()">Preguntar</button>
+
+    <!-- Cuadro de respuesta con fondo negro -->
+    <div id="responseBox">
+        <p id="statusMessage">⏳ Esperando respuesta...</p>
+        <p id="answer"></p>
+    </div>
+
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById("fileInput").files[0];
+            if (!fileInput) {
+                alert("Selecciona un archivo");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("file", fileInput);
+
+            document.getElementById("uploadStatus").innerText = "⏳ Subiendo archivo...";
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/upload/", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                document.getElementById("uploadStatus").innerText = "✅ " + data.message;
+            } catch (error) {
+                document.getElementById("uploadStatus").innerText = "❌ Error al subir archivo.";
+            }
+        }
+
+        async function askQuestion() {
+            const question = document.getElementById("questionInput").value;
+            const answerElement = document.getElementById("answer");
+            const statusMessage = document.getElementById("statusMessage");
+            const responseBox = document.getElementById("responseBox");
+
+            if (!question) {
+                alert("Escribe una pregunta.");
+                return;
+            }
+
+            // Mostrar cuadro de respuesta con mensaje de espera
+            responseBox.style.display = "block";
+            statusMessage.innerText = "⏳ Esperando respuesta...";
+            answerElement.innerText = "";
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/ask/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question: question })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Mostrar la respuesta en el cuadro negro
+                statusMessage.innerText = "✅ Respuesta:";
+                answerElement.innerText = data.response;
+            } catch (error) {
+                // Mostrar error en el cuadro negro si la consulta falla
+                statusMessage.innerText = "❌ Error al obtener respuesta.";
+                answerElement.innerText = "";
+                console.error("Error al obtener respuesta:", error);
+            }
+        }
+    </script>
+
+</body>
+</html>
